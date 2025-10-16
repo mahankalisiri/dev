@@ -1,6 +1,5 @@
 name: CI/CD Pipeline
 
-
 on:
   push:
     branches: [ main, develop ]
@@ -80,39 +79,32 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 1: Set up Docker (required for kind)
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
-      # Step 2: Install kind
       - name: Set up kind
         uses: engineerd/setup-kind@v0.5.0
         with:
           version: v0.20.0
 
-      # Step 3: Create temporary kind cluster
       - name: Create kind cluster
         run: kind create cluster --name cicd-test
 
-      # Step 4: Build Docker image and load into kind
       - name: Build Docker image and load into kind
         run: |
           docker build -t cicd-demo-app:latest .
           kind load docker-image cicd-demo-app:latest --name cicd-test
 
-      # Step 5: Update Deployment with the built image
       - name: Update image tag in deployment
         run: |
           sed -i "s|YOUR_DOCKERHUB_USERNAME/cicd-demo-app:latest|cicd-demo-app:latest|g" k8s/deployment.yaml
           cat k8s/deployment.yaml
 
-      # Step 6: Deploy manifests
       - name: Deploy to kind cluster
         run: |
           kubectl apply -f k8s/
           kubectl rollout status deployment/cicd-demo-app --timeout=300s
 
-      # Step 7: Verify deployment
       - name: Verify deployment
         run: |
           kubectl get pods -l app=cicd-demo-app
@@ -120,17 +112,16 @@ jobs:
           kubectl get ingress -l app=cicd-demo-app
 
   notify:
-  needs: [test, build-and-push, deploy]
-  runs-on: ubuntu-latest
-  if: always()
-  steps:
-    - name: Notify deployment status
-      run: |
-        if [ "${{ needs.deploy.result }}" == "success" ]; then
-          echo "✅ Deployment successful!"
-          echo "🚀 App deployed to kind cluster"
-        else
-          echo "❌ Deployment failed!"
-          exit 1
-        fi
-
+    needs: [test, build-and-push, deploy]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Notify deployment status
+        run: |
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Deployment successful!"
+            echo "🚀 App deployed to kind cluster"
+          else
+            echo "❌ Deployment failed!"
+            exit 1
+          fi
