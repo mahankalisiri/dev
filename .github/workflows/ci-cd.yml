@@ -87,10 +87,17 @@ jobs:
           version: 'latest'
 
       - name: Configure kubectl
-        run: |
-          echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig
-          export KUBECONFIG=kubeconfig
-          kubectl config current-context
+            shell: pwsh
+             run: |
+    # Decode the secret and save to kubeconfig file
+    [System.IO.File]::WriteAllBytes("kubeconfig", [System.Convert]::FromBase64String("${{ secrets.KUBECONFIG }}"))
+
+    # Set environment variable for kubectl
+    $env:KUBECONFIG = "$(pwd)\kubeconfig"
+
+    # Verify kubectl context
+    kubectl config current-context
+
 
       - name: Update image tag in deployment
         run: |
