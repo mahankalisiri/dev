@@ -92,8 +92,11 @@ jobs:
           # Decode the secret and save to kubeconfig file
           [System.IO.File]::WriteAllBytes("kubeconfig", [System.Convert]::FromBase64String("${{ secrets.KUBECONFIG }}"))
 
-          # Set environment variable for kubectl
-          $env:KUBECONFIG = "$(pwd)\kubeconfig"
+          # Verify the file exists
+          Get-ChildItem kubeconfig
+
+          # Set environment variable for kubectl (Linux runner path)
+          $env:KUBECONFIG = "$(pwd)/kubeconfig"
 
           # Verify kubectl context
           kubectl config current-context
