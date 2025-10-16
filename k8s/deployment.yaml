@@ -18,9 +18,9 @@ spec:
     spec:
       containers:
       - name: cicd-demo-app
-        # 👇 CHANGE THIS LINE ONLY
-        image: YOUR_DOCKERHUB_USERNAME/cicd-demo-app:latest
-        imagePullPolicy: Always
+        # ✅ Updated image for testing in kind / CI
+        image: cicd-demo-app:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
         env:
@@ -35,15 +35,16 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "100m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        # Temporary probes disabled for initial testing
+        # livenessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 3000
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 3000
+        #   initialDelaySeconds: 5
+        #   periodSeconds: 5
