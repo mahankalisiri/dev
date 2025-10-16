@@ -35,16 +35,15 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "100m"
-        # Temporary probes disabled for initial testing
-        # livenessProbe:
-        #   httpGet:
-        #     path: /health
-        #     port: 3000
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 10
-        # readinessProbe:
-        #   httpGet:
-        #     path: /health
-        #     port: 3000
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
