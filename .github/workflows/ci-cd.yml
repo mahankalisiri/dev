@@ -119,15 +119,17 @@ jobs:
           kubectl get ingress -l app=cicd-demo-app
 
   notify:
-    needs: [test, build-and-push, deploy]
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Notify deployment status
-        run: |
-          if [ "${{ needs.deploy.result }}" == "success" ]; then
-            echo "✅ Deployment successful!"
-            echo "🚀 App deployed to kind cluster"
-          else
-            echo "❌ Deployment failed!"
-            exit 1
+  needs: [test, build-and-push, deploy]
+  runs-on: ubuntu-latest
+  if: always()
+  steps:
+    - name: Notify deployment status
+      run: |
+        if [ "${{ needs.deploy.result }}" == "success" ]; then
+          echo "✅ Deployment successful!"
+          echo "🚀 App deployed to kind cluster"
+        else
+          echo "❌ Deployment failed!"
+          exit 1
+        fi
+
